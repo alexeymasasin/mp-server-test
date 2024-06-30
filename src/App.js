@@ -16,26 +16,35 @@ function App() {
   ];
 
   const getPostById = async () => {
-    try {
-      const response = await axios.get(serverURL);
-      setResponse('Пост получен успешно: ' + JSON.stringify(response.data));
-    } catch (error) {
-      setResponse('Ошибка при получении поста: ' + JSON.stringify(error));
+    if (serverURL) {
+      try {
+        const response = await axios.get(serverURL);
+        setResponse('Пост получен успешно: ' + JSON.stringify(response.data));
+      } catch (error) {
+        setResponse(
+          'Ошибка при получении поста: ' + JSON.stringify(error.message));
+      }
+    } else {
+      setResponse('URL запроса пуст');
     }
   };
 
   const postNewPost = async () => {
-    axios.post(serverURL, {
-      userName: newUserName,
-      Id: newUserId,
-    })
-      .then(function(response) {
-        setResponse('Пост успешно создан: ' + JSON.stringify(response));
+    if (serverURL && newUserId && newUserName) {
+      axios.post(serverURL, {
+        userName: newUserName,
+        Id: newUserId,
       })
-      .catch(function(error) {
-        setResponse(
-          'Ошибка при создании поста: ' + JSON.stringify(error.message));
-      });
+        .then(function(response) {
+          setResponse('Пост успешно создан: ' + JSON.stringify(response));
+        })
+        .catch(function(error) {
+          setResponse(
+            'Ошибка при создании поста: ' + JSON.stringify(error.message));
+        });
+    } else {
+      setResponse('Не все поля заполнены');
+    }
   };
 
   const handeSelect = (e) => {
@@ -99,7 +108,7 @@ function App() {
         </button>
 
         <div className="response">
-          <p>Ответ:</p>
+          <p>{response === '' ? 'Ожидание запроса...' : 'Ответ:'}</p>
           <p className="response-text">
             {response}
           </p>
